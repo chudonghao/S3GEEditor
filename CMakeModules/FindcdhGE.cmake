@@ -1,0 +1,54 @@
+set(cdhGE_FOUND FALSE)
+set(cdhGE_INCLUDE_DIRS)
+set(cdhGE_LIBRARY_DIRS)
+set(cdhGE_LIBRARIES)
+
+find_library(
+    CDHGE_LIBRARY_FILE_RELEASE
+    cdhGE
+    PATHS
+    $ENV{CDHGE_ROOT}
+    $ENV{PATH}
+)
+
+find_library(
+    CDHGE_LIBRARY_FILE_DEBUG
+    cdhGEd
+    PATHS
+    $ENV{CDHGE_ROOT}
+    $ENV{PATH}
+)
+
+find_file(
+    CDHGE_EXPORT_HEADER_FILE
+    cdhGE/export.h
+    PATHS
+    $ENV{CDHGE_ROOT}
+    $ENV{PATH}
+)
+
+# TODO version
+if (CDHGE_LIBRARY_FILE_RELEASE)
+    get_filename_component(cdhGE_LIBRARY_DIR_RELEASE ${CDHGE_LIBRARY_FILE_RELEASE} DIRECTORY)
+    list(APPEND cdhGE_LIBRARY_DIRS ${cdhGE_LIBRARY_DIR_RELEASE})
+endif ()
+if (CDHGE_LIBRARY_FILE_DEBUG)
+    get_filename_component(cdhGE_LIBRARY_DIR_DEBUG ${CDHGE_LIBRARY_FILE_DEBUG} DIRECTORY)
+    list(APPEND cdhGE_LIBRARY_DIRS ${cdhGE_LIBRARY_DIR_DEBUG})
+endif ()
+if (CDHGE_EXPORT_HEADER_FILE)
+    get_filename_component(cdhGE_INCLUDE_DIRS ${CDHGE_EXPORT_HEADER_FILE} DIRECTORY)
+    get_filename_component(cdhGE_INCLUDE_DIRS ${cdhGE_INCLUDE_DIRS}/.. ABSOLUTE)
+endif ()
+
+if (CDHGE_LIBRARY_FILE_DEBUG)
+    list(APPEND cdhGE_LIBRARIES debug ${CDHGE_LIBRARY_FILE_DEBUG})
+endif ()
+
+if (CDHGE_LIBRARY_FILE_RELEASE)
+    list(APPEND cdhGE_LIBRARIES optimized ${CDHGE_LIBRARY_FILE_RELEASE})
+endif ()
+
+if(cdhGE_INCLUDE_DIRS AND cdhGE_LIBRARIES)
+    set(cdhGE_FOUND TRUE)
+endif()
